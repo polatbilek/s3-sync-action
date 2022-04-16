@@ -34,9 +34,9 @@ text
 EOF
 
 sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
-sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/python.zip . --profile s3-sync-action --no-progress"
 sh -c "aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
-
+aws s3api list-objects-v2 --bucket ${AWS_REQUIREMENTS_BUCKET} --query "contains(Contents[].Key, 'requirements.txt')"
+sh -c "aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
