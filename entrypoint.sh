@@ -61,7 +61,11 @@ if [[ $reqcontains =~ "true" ]]; then
       sh -c "rm -rf ./python.zip"
       sh -c "aws s3 cp ./requirements.txt s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt --profile s3-sync-action --no-progress"
       echo "Deployed requirements"
+      else
+        echo "diff yok"
     fi
+    else
+      echo "dosya yok"
   fi
 
   sh -c "rm -r ./.tmp"
