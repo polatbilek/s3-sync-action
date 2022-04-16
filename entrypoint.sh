@@ -61,14 +61,14 @@ if [[ $reqcontains =~ "true" ]]; then
       sh -c "aws s3 cp ./requirements.txt s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt --profile s3-sync-action --no-progress"
       echo "Deployed requirements"
       else
-        echo "diff yok"
+        echo "There is no difference in requirements.txt"
     fi
     else
-      echo "dosya yok"
+      echo "requirements.txt does not found"
   fi
 
   else
-    echo "outside"
+    echo "requirements.txt does not found in s3"
 fi
 
 
