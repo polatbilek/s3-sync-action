@@ -60,10 +60,12 @@ if [[ $reqcontains =~ "true" ]]; then
       echo "Deployed requirements"
     fi
   fi
+
+  sh -c "rm -r ./.tmp"
   else
     echo "outside"
 fi
-sh -c "rm -r ./.tmp"
+
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
