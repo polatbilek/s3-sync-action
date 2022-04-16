@@ -45,21 +45,8 @@ echo $reqcontains
 if [[ $reqcontains =~ "true" ]]; then
   echo "inside"
 
-
   sh -c "mv requirements.txt orig_req.txt"
-  echo "1"
   sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt . --profile s3-sync-action --no-progress"
-  echo "2"
-  echo "$(ls -a)"
-  echo "2.2"
-  echo "$(diff -q orig_req.txt requirements.txt)"
-  echo "2.5"
-  #getdiff="$(diff -q orig_req.txt requirements.txt)"
-  echo "3"
-  echo "$getdiff"
-  echo "3.5"
-  sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt . --profile s3-sync-action --no-progress"
-  echo "4"
 
   if [ -f ./requirements.txt ]; then
     if [ -n "$(diff -q orig_req.txt requirements.txt)" ]; then
@@ -67,7 +54,7 @@ if [[ $reqcontains =~ "true" ]]; then
       sh -c "rm -rf ./python/*.dist-info"
       sh -c "zip -rq ./python.zip ./python/"
       sh -c "rm -rf ./python"
-      sh -c "aws s3 cp ./python.zip s3://$(PROJECT_NAME)-requirements --profile s3-sync-action --no-progress"
+      sh -c "aws s3 cp ./python.zip s3://${PROJECT_NAME}-requirements --profile s3-sync-action --no-progress"
       sh -c "rm -rf ./python.zip"
       sh -c "rm -rf requirements.txt"
       sh -c "mv orig_req.txt requirements.txt"
