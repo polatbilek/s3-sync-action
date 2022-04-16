@@ -14,6 +14,8 @@ LABEL maintainer="Jake Jarvis <jake@jarv.is>"
 ENV AWSCLI_VERSION='1.18.14'
 
 RUN pip install --quiet --no-cache-dir awscli==${AWSCLI_VERSION}
+RUN apk update
+RUN apk add zip
 
 ADD entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
