@@ -52,7 +52,7 @@ EOF
 
 # Deploy lambda codes
 zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/
-aws s3 cp s3://${AWS_S3_BUCKET}/python.zip . --profile s3-sync-action --no-progress
+aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/python.zip . --profile s3-sync-action --no-progress
 aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress
 
 # Deploy Requirements package if needed
