@@ -46,10 +46,12 @@ if [[ $reqcontains =~ "true" ]]; then
   echo "inside"
 
 
-  sh -c "mkdir .tmp"
+  sh -c "mv requirements.txt requirements_"
+  echo "1"
   sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt ./.tmp --profile s3-sync-action --no-progress"
+  echo "2"
   getdiff="$(diff ./requirements.txt ./.tmp/requirements.txt)"
-
+  echo "3"
 
   if [[ -f ./.tmp/requirements.txt ]]; then
     if [[ $getdiff ]]; then
