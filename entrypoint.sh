@@ -54,6 +54,12 @@ EOF
 sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
 sh -c "aws s3 cp ./notifyapp.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
+echo "${DEST_DIR}"
+echo "#(PWD)"
+
+sh -c "git fetch"
+sh -c "git pull"
+
 # Deploy Requirements package if needed
 if [[ $(git diff HEAD^ HEAD --name-only | grep "requirements.txt") ]]; then
   sh -c "pip install -r requirements.txt --target ./python"
