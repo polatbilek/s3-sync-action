@@ -38,13 +38,8 @@ sh -c "aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profi
 
 reqcontains="$(aws s3api list-objects-v2 --bucket ${AWS_REQUIREMENTS_BUCKET} --query "contains(Contents[].Key, 'requirements.txt')")"
 
-
-echo $reqcontains
-
 # Deploy Requirements package if needed
 if [[ $reqcontains =~ "true" ]]; then
-  echo "inside"
-
   sh -c "mv requirements.txt orig_req.txt"
   sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt . --profile s3-sync-action --no-progress"
 
