@@ -46,21 +46,23 @@ if [[ $reqcontains =~ "true" ]]; then
   echo "inside"
 
 
-  sh -c "mv requirements.txt requirements_"
+  sh -c "mv requirements.txt orig_req.txt"
   echo "1"
-  sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt ./.tmp --profile s3-sync-action --no-progress"
+  sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt . --profile s3-sync-action --no-progress"
   echo "2"
-  getdiff="$(diff ./requirements.txt ./.tmp/requirements.txt)"
+  getdiff="$(diff orig_req.txt requirements.txt)"
   echo "3"
 
-  if [[ -f ./.tmp/requirements.txt ]]; then
+  if [[ -f ./requirements.txt ]]; then
     if [[ $getdiff ]]; then
-      sh -c "pip install -r requirements.txt --target ./python"
+      sh -c "pip install -r orig_req.txt --target ./python"
       sh -c "rm -rf ./python/*.dist-info"
       sh -c "zip -rq ./python.zip ./python/"
       sh -c "rm -rf ./python"
-      sh -c "aws s3 cp ./python.zip $(PROJECT_NAME)-requirements"
+      sh -c "aws s3 cp ./python.zip s3://$(PROJECT_NAME)-requirements --profile s3-sync-action --no-progress"
       sh -c "rm -rf ./python.zip"
+      sh -c "rm -rf requirements.txt"
+      sh -c "mv orig_req.txt requirements.txt"
       sh -c "aws s3 cp ./requirements.txt s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt --profile s3-sync-action --no-progress"
       echo "Deployed requirements"
       else
@@ -70,7 +72,6 @@ if [[ $reqcontains =~ "true" ]]; then
       echo "dosya yok"
   fi
 
-  sh -c "rm -r ./.tmp"
   else
     echo "outside"
 fi
