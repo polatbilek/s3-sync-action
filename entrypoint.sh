@@ -54,6 +54,7 @@ EOF
 sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
 sh -c "aws s3 cp ./notifyapp.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
+sh -c "git config --global --add safe.directory /github/workspace"
 sh -c "git fetch"
 sh -c "git pull"
 
