@@ -54,7 +54,7 @@ if [[ $reqcontains =~ "true" ]]; then
   echo "2.2"
   echo "$(diff -q orig_req.txt requirements.txt)"
   echo "2.5"
-  getdiff="$(diff -q orig_req.txt requirements.txt)"
+  #getdiff="$(diff -q orig_req.txt requirements.txt)"
   echo "3"
   echo "$getdiff"
   echo "3.5"
@@ -62,7 +62,7 @@ if [[ $reqcontains =~ "true" ]]; then
   echo "4"
 
   if [ -f ./requirements.txt ]; then
-    if [ -n "$getdiff" ]; then
+    if [ -n "$(diff -q orig_req.txt requirements.txt)" ]; then
       sh -c "pip install -r orig_req.txt --target ./python"
       sh -c "rm -rf ./python/*.dist-info"
       sh -c "zip -rq ./python.zip ./python/"
