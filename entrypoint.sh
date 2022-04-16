@@ -54,12 +54,10 @@ EOF
 sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
 sh -c "aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
-echo "$(ls)"
-echo "$(PWD)"
-
 sh -c "git config --global --add safe.directory /github/workspace"
 sh -c "git fetch"
 sh -c "git pull"
+echo "$(ls -a)"
 
 # Deploy Requirements package if needed
 if [[ $(git diff HEAD^ HEAD --name-only | grep "requirements.txt") ]]; then
