@@ -37,6 +37,7 @@ sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
 sh -c "aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
 reqcontains="$(aws s3api list-objects-v2 --bucket ${AWS_REQUIREMENTS_BUCKET} --query "contains(Contents[].Key, 'requirements.txt')")"
+getdiff="$(diff ./requirements.txt ./.tmp/requirements.txt)"
 
 echo $reqcontains
 
@@ -49,7 +50,7 @@ if [[ $reqcontains =~ "true" ]]; then
   sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt ./.tmp --profile s3-sync-action --no-progress"
 
   if [[ -f ./.tmp/requirements.txt ]]; then
-    if [[ $(diff requirements.txt ./.tmp/requirements.txt) ]]; then
+    if [[ $getdiff ]]; then
       sh -c "pip install -r requirements.txt --target ./python"
       sh -c "rm -rf ./python/*.dist-info"
       sh -c "zip -rq ./python.zip ./python/"
