@@ -55,22 +55,26 @@ sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
 sh -c "aws s3 cp ./${PROJECT_NAME}.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
 # Deploy Requirements package if needed
-sh -c "mkdir .tmp"
-sh -c "aws s3 cp s3://${AWS_S3_BUCKET}/requirements.txt ./.tmp --profile s3-sync-action --no-progress"
+if [[ $(aws s3api list-objects-v2 --bucket ${AWS_REQUIREMENTS_BUCKET} --query "contains(Contents[].Key, 'requirements.txt')") ]]; then
+  echo "inside"
+  echo $(aws s3api list-objects-v2 --bucket ${AWS_REQUIREMENTS_BUCKET} --query "contains(Contents[].Key, 'requirements.txt')")
+  
+  sh -c "mkdir .tmp"
+  sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt ./.tmp --profile s3-sync-action --no-progress"
 
-if [[ -f ./.tmp/requirements.txt ]]; then
-  if [[ diff requirements.txt ./.tmp/requirements.txt ]]; then
-    sh -c "pip install -r requirements.txt --target ./python"
-    sh -c "rm -rf ./python/*.dist-info"
-    sh -c "zip -rq ./python.zip ./python/"
-    sh -c "rm -rf ./python"
-    sh -c "aws s3 cp ./python.zip $(PROJECT_NAME)-requirements"
-    sh -c "rm -rf ./python.zip"
-    sh -c "aws s3 cp ./requirements.txt s3://${AWS_S3_BUCKET}/requirements.txt --profile s3-sync-action --no-progress"
-    echo "Deployed requirements"
+  if [[ -f ./.tmp/requirements.txt ]]; then
+    if [[ diff requirements.txt ./.tmp/requirements.txt ]]; then
+      sh -c "pip install -r requirements.txt --target ./python"
+      sh -c "rm -rf ./python/*.dist-info"
+      sh -c "zip -rq ./python.zip ./python/"
+      sh -c "rm -rf ./python"
+      sh -c "aws s3 cp ./python.zip $(PROJECT_NAME)-requirements"
+      sh -c "rm -rf ./python.zip"
+      sh -c "aws s3 cp ./requirements.txt s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt --profile s3-sync-action --no-progress"
+      echo "Deployed requirements"
+    fi
   fi
 fi
-
 sh -c "rm -r ./.tmp"
 
 # Clear out credentials after we're done.
