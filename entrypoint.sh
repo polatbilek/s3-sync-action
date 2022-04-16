@@ -50,8 +50,20 @@ EOF
 #              --no-progress \
 #              ${ENDPOINT_APPEND} $*"
 
+# Deploy lambda codes
 sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
 sh -c "aws s3 cp ./notifyapp.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
+
+# Deploy Requirements package if needed
+if [[ $(git diff HEAD^ HEAD --name-only | grep "requirements.txt") ]]; then
+  sh -c "pip install -r requirements.txt --target ./python"
+  sh -c "rm -rf ./python/*.dist-info"
+  sh -c "zip -rq ./python.zip ./python/"
+  sh -c "rm -rf ./python"
+  sh -c "aws s3 cp ./python.zip $(PROJECT_NAME)-requirements"
+  sh -c "rm -rf ./python.zip"
+  echo "Deployed requirements"
+fi
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
