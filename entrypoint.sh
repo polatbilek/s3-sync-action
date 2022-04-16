@@ -64,11 +64,25 @@ if [[ $reqcontains =~ "true" ]]; then
         echo "There is no difference in requirements.txt"
     fi
     else
-      echo "requirements.txt does not found"
+      echo "ERROR! requirements.txt does not found in local files"
   fi
 
   else
-    echo "requirements.txt does not found in s3"
+    echo "requirements.txt does not found in s3, so requirements package will be deployed"
+
+    sh -c "mv requirements.txt orig_req.txt"
+    sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt . --profile s3-sync-action --no-progress"
+    sh -c "pip install -r orig_req.txt --target ./python"
+    sh -c "rm -rf ./python/*.dist-info"
+    sh -c "zip -rq ./python.zip ./python/"
+    sh -c "rm -rf ./python"
+    sh -c "aws s3 cp ./python.zip s3://${PROJECT_NAME}-requirements --profile s3-sync-action --no-progress"
+    sh -c "rm -rf ./python.zip"
+    sh -c "rm -rf requirements.txt"
+    sh -c "mv orig_req.txt requirements.txt"
+    sh -c "aws s3 cp ./requirements.txt s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt --profile s3-sync-action --no-progress"
+
+    echo "Deployed requirements"
 fi
 
 
