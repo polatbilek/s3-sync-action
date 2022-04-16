@@ -50,7 +50,8 @@ if [[ $reqcontains =~ "true" ]]; then
   echo "1"
   sh -c "aws s3 cp s3://${AWS_REQUIREMENTS_BUCKET}/requirements.txt . --profile s3-sync-action --no-progress"
   echo "2"
-  getdiff="$(diff orig_req.txt requirements.txt)"
+  echo "$(ls -a)"
+  getdiff="$(diff ./orig_req.txt ./requirements.txt)"
   echo "3"
 
   if [[ -f ./requirements.txt ]]; then
