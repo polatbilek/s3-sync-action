@@ -22,6 +22,12 @@ if [ -z "$AWS_REGION" ]; then
   AWS_REGION="us-east-1"
 fi
 
+# Default to us-east-1 if AWS_REGION not set.
+if [ -z "$PROJECT_NAME" ]; then
+  echo "PROJECT_NAME is not set. Quitting."
+  exit 1
+fi
+
 # Override default AWS endpoint if user sets AWS_S3_ENDPOINT.
 if [ -n "$AWS_S3_ENDPOINT" ]; then
   ENDPOINT_APPEND="--endpoint-url $AWS_S3_ENDPOINT"
@@ -39,10 +45,13 @@ EOF
 
 # Sync using our dedicated profile and suppress verbose messages.
 # All other flags are optional via the `args:` directive.
-sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
-              --profile s3-sync-action \
-              --no-progress \
-              ${ENDPOINT_APPEND} $*"
+#sh -c "aws s3 sync ${SOURCE_DIR:-.} s3://${AWS_S3_BUCKET}/${DEST_DIR} \
+#              --profile s3-sync-action \
+#              --no-progress \
+#              ${ENDPOINT_APPEND} $*"
+
+sh -c "zip -rq ./${PROJECT_NAME}.zip ./${PROJECT_NAME}/"
+sh -c "aws s3 cp ./notifyapp.zip s3://${AWS_S3_BUCKET}/${DEST_DIR} --profile s3-sync-action --no-progress"
 
 # Clear out credentials after we're done.
 # We need to re-run `aws configure` with bogus input instead of
